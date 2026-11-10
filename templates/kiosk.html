@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photobox</title>
+<link rel="stylesheet" href="/static/kiosk.css">
+</head>
+<body>
+  <img id="preview" src="/stream.mjpg" alt="">
+
+  <section id="idle" class="layer">
+    <h1>Photobox</h1>
+    <div class="modes">
+      <button class="mode" data-mode="single"><span>📸</span>1 photo</button>
+      <button class="mode" data-mode="strip"><span>🎞️</span>{{ strip_shots }} photos</button>
+    </div>
+    <div class="wifi-hint">
+      <div class="qr">{{ wifi_qr|safe }}</div>
+      <div>Toutes les photos sur votre téléphone :<br>Wi-Fi <b>{{ ssid }}</b>
+        {% if password %}<br>mot de passe <b>{{ password }}</b>{% endif %}</div>
+    </div>
+  </section>
+
+  <section id="countdown" class="layer" hidden>
+    <p id="shot-label"></p>
+    <span id="count"></span>
+  </section>
+  <div id="flash" hidden></div>
+  <section id="busy" class="layer" hidden><div class="spinner"></div></section>
+
+  <section id="result" class="layer" hidden>
+    <img id="shot" alt="">
+    <aside>
+      <h2>Récupérez vos photos</h2>
+      <div class="steps">
+        <figure><div class="qr">{{ wifi_qr|safe }}</div>
+          <figcaption>① Wi-Fi <b>{{ ssid }}</b>{% if captive %}<br><small>la galerie s'ouvre toute seule</small>{% endif %}</figcaption></figure>
+        <figure><div class="qr" id="photo-qr"></div>
+          <figcaption>② Scannez pour télécharger</figcaption></figure>
+      </div>
+      <div class="buttons">
+        {% if print_enabled %}<button id="btn-print">🖨️ Imprimer</button>{% endif %}
+        <button id="btn-again" class="secondary">Terminé</button>
+      </div>
+      <p id="msg"></p>
+    </aside>
+  </section>
+
+<script>window.PHOTOBOX = {{ cfg|tojson }};</script>
+<script src="/static/kiosk.js"></script>
+</body>
+</html>

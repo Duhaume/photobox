@@ -1,0 +1,25 @@
+:root { color-scheme: light dark; --accent: #ff4f7b; }
+body { margin: 0; font-family: system-ui, sans-serif; background: #111; color: #eee; }
+main { max-width: 720px; margin: 0 auto; padding: 16px; text-align: center; }
+main.wide { max-width: 1200px; }
+h1 { font-size: 1.5rem; }
+img { max-width: 100%; border-radius: 10px; display: block; margin: 0 auto; }
+a { color: var(--accent); }
+.btn { display: block; margin: 20px 0 8px; padding: 16px; border-radius: 12px; background: var(--accent);
+  color: #fff; text-decoration: none; font-size: 1.2rem; font-weight: 600; }
+.hint { color: #aaa; font-size: .9rem; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.grid img { aspect-ratio: 16/9; object-fit: cover; width: 100%; }
+h2 { font-size: 1.1rem; margin-top: 28px; }
+.back { text-align: left; margin: 0; }
+.btn.small { margin: 8px 0 0; padding: 10px; font-size: 1rem; }
+.shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.shots figure { margin: 0; }
+.grid a { position: relative; display: block; }
+.badge { position: absolute; right: 6px; bottom: 6px; background: var(--accent); color: #fff;
+  font-size: .8rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+.banner { display: flex; gap: 12px; align-items: center; justify-content: space-between; text-align: left;
+  background: #222; border-radius: 12px; padding: 12px 14px; }
+.banner button { font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 10px 16px;
+  background: var(--accent); color: #fff; flex-shrink: 0; }
+[hidden] { display: none !important; }

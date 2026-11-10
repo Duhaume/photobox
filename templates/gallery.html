@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photobox · Galerie</title>
+<link rel="stylesheet" href="/static/guest.css">
+</head>
+<body>
+  <main class="wide">
+    {% if portal %}
+    <div class="banner">
+      <span>Bienvenue sur la <b>Photobox</b> 👋 Touchez une photo pour la télécharger.</span>
+      <button id="done">Terminé</button>
+    </div>
+    {% endif %}
+    <h1>Galerie</h1>
+    <p id="empty" {% if items %}hidden{% endif %}>Pas encore de photos… allez en prendre ! 📸</p>
+    <div class="grid" id="grid">
+      {% for it in items %}<a href="/p/{{ it.id }}" data-id="{{ it.id }}"><img loading="lazy" src="{{ it.thumb }}" alt="">{% if it.shots|length > 1 %}<span class="badge">{{ it.shots|length }}</span>{% endif %}</a>{% endfor %}
+    </div>
+  </main>
+<script>
+// Les nouvelles photos apparaissent sans recharger la page.
+const grid = document.getElementById("grid");
+async function refresh() {
+  try {
+    const items = await (await fetch("/api/gallery")).json();
+    const known = new Set([...grid.children].map((a) => a.dataset.id));
+    for (const it of items.filter((i) => !known.has(i.id)).reverse()) {
+      const a = document.createElement("a");
+      a.href = `/p/${it.id}`; a.dataset.id = it.id;
+      a.innerHTML = `<img src="${it.thumb}" alt="">` +
+        (it.shots.length > 1 ? `<span class="badge">${it.shots.length}</span>` : "");
+      grid.prepend(a);
+    }
+    document.getElementById("empty").hidden = items.length > 0;
+  } catch (e) {}
+}
+setInterval(refresh, 8000);
+
+// Portail captif : « Terminé » valide l'accès → le téléphone ferme la fenêtre et reste connecté.
+document.getElementById("done")?.addEventListener("click", async (e) => {
+  await fetch("/portail/ok", { method: "POST" });
+  e.target.closest(".banner").innerHTML =
+    "<span>C'est bon ! Vous pouvez fermer cette fenêtre. Galerie : <b>http://10.42.0.1</b></span>";
+});
+</script>
+</body>
+</html>

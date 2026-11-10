@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vos photos</title>
+<link rel="stylesheet" href="/static/guest.css">
+</head>
+<body>
+  <main>
+    {% if gallery %}<p class="back"><a href="/galerie">← Toutes les photos</a></p>{% endif %}
+    <h1>📸 {{ "Vos photos" if s.shots|length > 1 else "Votre photo" }}</h1>
+    <img src="{{ s.cover }}" alt="">
+    <a class="btn" href="/dl/{{ s.id }}/{{ s.cover_name }}" download>
+      Télécharger {{ "la planche" if s.shots|length > 1 else "" }}</a>
+
+    {% if s.shots|length > 1 %}
+    <h2>Photos une par une</h2>
+    <div class="shots">
+      {% for p in s.shots %}
+      <figure><img loading="lazy" src="{{ p.src }}" alt="">
+        <a class="btn small" href="/dl/{{ s.id }}/{{ p.name }}" download>Télécharger {{ loop.index }}</a></figure>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <p class="hint">Si le bouton ne marche pas : appui long sur la photo → « Enregistrer ».
+      Dans la fenêtre « Se connecter au Wi-Fi », ouvrez plutôt <b>http://10.42.0.1</b> dans votre navigateur.</p>
+  </main>
+</body>
+</html>
