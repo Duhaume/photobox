@@ -66,3 +66,18 @@ small.err { color: #ff8a8a; font-weight: 600; }
 .p-solid { background: var(--btn2); border-color: transparent; }
 .p-btn.wide { grid-column: 1 / -1; padding: 12px; }
 .p-main.wide { border-color: transparent; }
+
+/* Clavier virtuel */
+#vkb { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 10px 10px 14px;
+  background: #0b0b0b; border-top: 1px solid var(--line); box-shadow: 0 -10px 30px #000a;
+  display: flex; flex-direction: column; gap: 8px; user-select: none; touch-action: manipulation; }
+.vkb-row { display: flex; gap: 8px; justify-content: center; }
+#vkb button { flex: 1 1 0; max-width: 84px; min-height: 58px; padding: 0; border-radius: 10px;
+  background: #2a2a2a; color: #fff; font-size: 1.3rem; font-weight: 500; }
+#vkb button:active { background: #555; }
+#vkb button.wide { max-width: 160px; flex-grow: 1.6; background: #3a3a3a; font-size: 1.05rem; }
+#vkb button.space { max-width: 520px; flex-grow: 6; }
+#vkb button.on { background: var(--accent); }
+#vkb.numeric { align-items: center; }
+#vkb.numeric .vkb-row { width: min(420px, 100%); }
+#vkb.numeric button { max-width: none; min-height: 64px; }

@@ -9,10 +9,10 @@
 <body>
 <form method="post" action="/reglages" enctype="multipart/form-data" id="form">
   <header>
-    <h1>⚙️ Réglages</h1>
+    <h1>Réglages</h1>
     <div class="actions">
       <button type="submit">Enregistrer</button>
-      <a class="btn go" href="/">📸 Ouvrir la page photos</a>
+      <a class="btn go" href="/">Ouvrir la page photos</a>
     </div>
   </header>
 
@@ -39,7 +39,7 @@
 
     <div class="field">Fond
       <div class="seg">
-        {% for v, label in [("camera", "📷 Aperçu caméra"), ("color", "🎨 Couleur"), ("image", "🖼️ Image")] %}
+        {% for v, label in [("camera", "Aperçu caméra"), ("color", "Couleur"), ("image", "Image")] %}
         <label><input type="radio" name="bg_mode" value="{{ v }}" {% if st.bg_mode == v %}checked{% endif %}><span>{{ label }}</span></label>
         {% endfor %}
       </div>
@@ -89,7 +89,7 @@
         <div class="preview" id="btn-preview">
           <span class="p-btn p-main">1 photo</span>
           <span class="p-btn p-other">{{ strip_shots }} photos</span>
-          <span class="p-btn p-main wide">🖨️ Imprimer</span>
+          <span class="p-btn p-main wide">Imprimer</span>
           <span class="p-btn p-solid wide">Terminé</span>
         </div>
         <small>Le bouton mis en avant à l'accueil est celui du mode par défaut (réglé plus bas).</small>
@@ -189,5 +189,6 @@ $("#bg-file").addEventListener("change", (e) => {
   t.querySelector("span").hidden = true;
 });
 </script>
+<script src="/static/vkeyboard.js"></script>
 </body>
 </html>
