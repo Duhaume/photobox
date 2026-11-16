@@ -20,6 +20,15 @@
   {% if errors %}<p class="notice err">Certains champs sont incorrects, rien n'a été enregistré.</p>{% endif %}
 
   {% macro err(name) %}{% if errors.get(name) %}<small class="err">{{ errors[name] }}</small>{% endif %}{% endmacro %}
+  {% macro color(name, label, swatches) %}
+  <label class="field"><span>{{ label }}</span>
+    <span class="color-row">
+      <input type="color" name="{{ name }}" value="{{ st[name] }}">
+      {% for c in swatches %}<button type="button" class="swatch" data-target="{{ name }}" data-color="{{ c }}" style="background:{{ c }}" aria-label="{{ c }}"></button>{% endfor %}
+    </span>
+    {{ err(name) }}
+  </label>
+  {% endmacro %}
 
   <section>
     <h2>Écran d'accueil</h2>
@@ -38,15 +47,7 @@
     </div>
 
     <div class="bg-opt" data-for="color">
-      <label class="field">Couleur
-        <span class="color-row">
-          <input type="color" name="bg_color" value="{{ st.bg_color }}">
-          {% for c in ["#1b1b2f", "#000000", "#ffffff", "#ff4f7b", "#1e5aa8", "#2e7d32", "#c9a227"] %}
-          <button type="button" class="swatch" data-color="{{ c }}" style="background:{{ c }}" aria-label="{{ c }}"></button>
-          {% endfor %}
-        </span>
-        {{ err("bg_color") }}
-      </label>
+      {{ color("bg_color", "Couleur", ["#1b1b2f", "#000000", "#ffffff", "#ff4f7b", "#1e5aa8", "#2e7d32", "#c9a227"]) }}
     </div>
 
     <div class="bg-opt" data-for="image">
@@ -74,6 +75,26 @@
       </label>
     </div>
     <p class="hint">Le fond ne concerne que l'accueil : pendant le compte à rebours, les invités se voient toujours à l'écran.</p>
+  </section>
+
+  <section>
+    <h2>Couleurs des boutons</h2>
+    <div class="row">
+      <div>
+        {{ color("btn_color", "Bouton principal (mode par défaut, Imprimer)", ["#ff4f7b", "#e53935", "#1e5aa8", "#2e7d32", "#c9a227", "#7b1fa2", "#000000"]) }}
+        {{ color("btn2_color", "Autres boutons (autre mode, Terminé)", ["#333333", "#000000", "#555555", "#ffffff", "#1b1b2f", "#3e2723"]) }}
+        {{ color("btn_text_color", "Texte des boutons", ["#ffffff", "#000000", "#ffe082"]) }}
+      </div>
+      <div class="field"><span>Aperçu</span>
+        <div class="preview" id="btn-preview">
+          <span class="p-btn p-main">📸 1 photo</span>
+          <span class="p-btn p-other">🎞️ {{ strip_shots }} photos</span>
+          <span class="p-btn p-main wide">🖨️ Imprimer</span>
+          <span class="p-btn p-solid wide">Terminé</span>
+        </div>
+        <small>Le bouton mis en avant à l'accueil est celui du mode par défaut (réglé plus bas).</small>
+      </div>
+    </div>
   </section>
 
   <section>
@@ -138,8 +159,24 @@ function syncBg() {
 for (const r of document.querySelectorAll("input[name=bg_mode]")) r.addEventListener("change", syncBg);
 syncBg();
 
+// Pastilles de couleur : remplissent le sélecteur du même champ
 for (const b of document.querySelectorAll(".swatch"))
-  b.addEventListener("click", () => ($("input[name=bg_color]").value = b.dataset.color));
+  b.addEventListener("click", () => {
+    const input = document.querySelector(`input[name=${b.dataset.target}]`);
+    input.value = b.dataset.color;
+    input.dispatchEvent(new Event("input"));
+  });
+
+// Aperçu des boutons en direct
+function syncPreview() {
+  const p = $("#btn-preview").style;
+  p.setProperty("--accent", $("input[name=btn_color]").value);
+  p.setProperty("--btn2", $("input[name=btn2_color]").value);
+  p.setProperty("--btn-fg", $("input[name=btn_text_color]").value);
+}
+for (const n of ["btn_color", "btn2_color", "btn_text_color"])
+  document.querySelector(`input[name=${n}]`).addEventListener("input", syncPreview);
+syncPreview();
 
 $("#dim").addEventListener("input", (e) => ($("#dim-out").textContent = e.target.value));
 

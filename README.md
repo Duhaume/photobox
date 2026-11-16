@@ -72,6 +72,7 @@ Page **http://localhost/reglages** (sur le Pi), accessible :
   à côté de **« Photobox »** qui rouvre la page photos).
 
 On y règle : titre et **fond de l'écran d'accueil** (aperçu caméra, couleur unie ou image, avec assombrissement),
+**couleurs des boutons** (bouton principal, autres boutons, texte, avec aperçu),
 comptes à rebours, mode du bouton physique, délai de retour à l'accueil, impression (activée, tirages max,
 texte du bandeau). Le bouton **« Ouvrir la page photos »** ramène à l'accueil, qui prend les nouveaux réglages.
 Les réglages sont enregistrés dans `data/settings.json` et l'image de fond dans `data/background.jpg`

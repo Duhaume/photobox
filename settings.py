@@ -56,6 +56,9 @@ SCHEMA = {
     "bg_mode": (_choice("camera", "color", "image"), config.BG_MODE),
     "bg_color": (_color, config.BG_COLOR),
     "bg_dim": (_int(0, 80), config.BG_DIM),           # % d'assombrissement de l'image de fond
+    "btn_color": (_color, config.BTN_COLOR),
+    "btn2_color": (_color, config.BTN2_COLOR),
+    "btn_text_color": (_color, config.BTN_TEXT_COLOR),
     # Prise de vue
     "countdown": (_int(1, 15), config.COUNTDOWN),
     "strip_countdown": (_int(1, 15), config.STRIP_COUNTDOWN),

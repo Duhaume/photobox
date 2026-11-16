@@ -6,7 +6,7 @@
 # Usage : sudo ./hotspot.sh [SSID] [MOT_DE_PASSE (8+ caractères, vide = réseau ouvert)] [PAYS]
 set -euo pipefail
 SSID="${1:-Photobox}"
-PSK="${2-souris123}"
+PSK="${2-}"
 COUNTRY="${3:-FR}"
 IFACE="${IFACE:-wlan0}"
 CAPTIVE="${CAPTIVE:-1}"

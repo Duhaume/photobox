@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Photobox</title>
 <link rel="stylesheet" href="/static/kiosk.css">
+<style>:root { --accent: {{ st.btn_color }}; --btn2: {{ st.btn2_color }}; --btn-fg: {{ st.btn_text_color }}; }</style>
 </head>
 <body>
   <img id="preview" src="/stream.mjpg" alt="">
@@ -21,8 +22,7 @@
       <h1>{{ st.title }}</h1>
       <div class="wifi-hint">
         <div class="qr">{{ wifi_qr|safe }}</div>
-        <div>Toutes les photos sur votre téléphone :<br>Wi-Fi <b>{{ ssid }}</b>
-          {% if password %}<br>mot de passe <b>{{ password }}</b>{% endif %}</div>
+        <div>Toutes les photos sur votre téléphone :<br>Wi-Fi <b>{{ ssid }}</b></div>
       </div>
     </div>
     <div class="modes">

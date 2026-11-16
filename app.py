@@ -169,7 +169,6 @@ def kiosk():
         print_enabled=st["print_enabled"],
         wifi_qr=qr_svg(wifi_qr_payload()),
         ssid=config.WIFI_SSID,
-        password=config.WIFI_PASSWORD,
         captive=config.CAPTIVE_PORTAL,
     )
 

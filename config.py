@@ -17,7 +17,7 @@ HOTSPOT_IP = _env("HOTSPOT_IP", "10.42.0.1")  # IP du Pi sur le hotspot (défaut
 
 # --- Hotspot Wi-Fi (doit correspondre à deploy/hotspot.sh) ---
 WIFI_SSID = _env("WIFI_SSID", "Photobox")
-WIFI_PASSWORD = _env("WIFI_PASSWORD", "souris123")  # "" => réseau ouvert
+WIFI_PASSWORD = _env("WIFI_PASSWORD", "")  # "" => réseau ouvert (sinon 8 caractères min.)
 
 # --- Réglages modifiables depuis l'écran (http://localhost/reglages) ---
 # Les valeurs ci-dessous marquées « (réglage) » ne sont que des valeurs par défaut :
@@ -30,6 +30,9 @@ TITLE = _env("TITLE", "Photobox")              # (réglage) titre de l'accueil
 BG_MODE = _env("BG_MODE", "camera")            # (réglage) fond : "camera", "color" ou "image"
 BG_COLOR = _env("BG_COLOR", "#1b1b2f")         # (réglage) couleur de fond
 BG_DIM = _env("BG_DIM", 20, int)               # (réglage) assombrissement de l'image de fond (%)
+BTN_COLOR = _env("BTN_COLOR", "#ff4f7b")       # (réglage) bouton principal (mode par défaut, Imprimer)
+BTN2_COLOR = _env("BTN2_COLOR", "#333333")     # (réglage) autres boutons (autre mode, Terminé)
+BTN_TEXT_COLOR = _env("BTN_TEXT_COLOR", "#ffffff")  # (réglage) texte des boutons
 
 # --- Photos ---
 PHOTO_DIR = Path(_env("PHOTO_DIR", str(BASE_DIR / "photos")))

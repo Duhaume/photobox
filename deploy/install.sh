@@ -71,8 +71,8 @@ done
 echo "==> Hotspot Wi-Fi"
 read -rp "Créer le hotspot maintenant ? (coupe le Wi-Fi client actuel) [o/N] " r
 if [[ "$r" =~ ^[oOyY]$ ]]; then
-  read -rp "SSID [Photobox] : " ssid; read -rp "Mot de passe (8+ car., vide = ouvert) [souris123] : " psk
-  sudo "$APP_DIR/deploy/hotspot.sh" "${ssid:-Photobox}" "${psk-souris123}"
+  read -rp "SSID [Photobox] : " ssid; read -rp "Mot de passe (8+ car., vide = réseau ouvert) [] : " psk
+  sudo "$APP_DIR/deploy/hotspot.sh" "${ssid:-Photobox}" "${psk-}"
   echo "⚠  Reportez SSID / mot de passe dans config.py (WIFI_SSID / WIFI_PASSWORD)."
 fi
 
