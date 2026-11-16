@@ -49,6 +49,25 @@ Name=Photobox kiosk
 Exec=$APP_DIR/deploy/kiosk.sh
 DESK
 
+echo "==> Raccourcis (menu des applications et bureau) : page photos et réglages"
+mkdir -p ~/.local/share/applications
+for entry in "photobox|Photobox|" "photobox-reglages|Photobox – Réglages|reglages"; do
+  IFS="|" read -r file name path <<<"$entry"
+  cat > ~/.local/share/applications/$file.desktop <<DESK
+[Desktop Entry]
+Type=Application
+Name=$name
+Exec=$APP_DIR/deploy/kiosk.sh $path
+Icon=camera-photo
+Categories=Graphics;
+DESK
+  DESKTOP_DIR="$(xdg-user-dir DESKTOP 2>/dev/null || echo ~/Desktop)"
+  if [ -d "$DESKTOP_DIR" ]; then
+    cp ~/.local/share/applications/$file.desktop "$DESKTOP_DIR/"
+    chmod +x "$DESKTOP_DIR/$file.desktop"
+  fi
+done
+
 echo "==> Hotspot Wi-Fi"
 read -rp "Créer le hotspot maintenant ? (coupe le Wi-Fi client actuel) [o/N] " r
 if [[ "$r" =~ ^[oOyY]$ ]]; then

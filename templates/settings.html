@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photobox · Réglages</title>
+<link rel="stylesheet" href="/static/settings.css">
+</head>
+<body>
+<form method="post" action="/reglages" enctype="multipart/form-data" id="form">
+  <header>
+    <h1>⚙️ Réglages</h1>
+    <div class="actions">
+      <button type="submit">Enregistrer</button>
+      <a class="btn go" href="/">📸 Ouvrir la page photos</a>
+    </div>
+  </header>
+
+  {% if saved %}<p class="notice ok">Réglages enregistrés ✔</p>{% endif %}
+  {% if errors %}<p class="notice err">Certains champs sont incorrects, rien n'a été enregistré.</p>{% endif %}
+
+  {% macro err(name) %}{% if errors.get(name) %}<small class="err">{{ errors[name] }}</small>{% endif %}{% endmacro %}
+
+  <section>
+    <h2>Écran d'accueil</h2>
+    <label class="field">Titre
+      <input type="text" name="title" value="{{ st.title }}" maxlength="60" placeholder="(aucun titre)">
+      {{ err("title") }}
+    </label>
+
+    <div class="field">Fond
+      <div class="seg">
+        {% for v, label in [("camera", "📷 Aperçu caméra"), ("color", "🎨 Couleur"), ("image", "🖼️ Image")] %}
+        <label><input type="radio" name="bg_mode" value="{{ v }}" {% if st.bg_mode == v %}checked{% endif %}><span>{{ label }}</span></label>
+        {% endfor %}
+      </div>
+      {{ err("bg_mode") }}
+    </div>
+
+    <div class="bg-opt" data-for="color">
+      <label class="field">Couleur
+        <span class="color-row">
+          <input type="color" name="bg_color" value="{{ st.bg_color }}">
+          {% for c in ["#1b1b2f", "#000000", "#ffffff", "#ff4f7b", "#1e5aa8", "#2e7d32", "#c9a227"] %}
+          <button type="button" class="swatch" data-color="{{ c }}" style="background:{{ c }}" aria-label="{{ c }}"></button>
+          {% endfor %}
+        </span>
+        {{ err("bg_color") }}
+      </label>
+    </div>
+
+    <div class="bg-opt" data-for="image">
+      <div class="field">Image
+        <div class="bg-image">
+          <div class="thumb" id="bg-thumb"
+            {% if bg_version %}style="background-image:url(/reglages/fond.jpg?v={{ bg_version }})"{% endif %}>
+            <span {% if bg_version %}hidden{% endif %}>Aucune image</span>
+          </div>
+          <div class="bg-buttons">
+            <label class="btn secondary">Choisir une image…
+              <input type="file" name="bg_image" accept="image/*" id="bg-file" hidden></label>
+            {% if bg_version %}
+            <label class="check"><input type="checkbox" name="bg_delete" value="1"> Supprimer l'image actuelle</label>
+            {% endif %}
+            <small>JPEG ou PNG, idéalement au format de l'écran (16/9). Elle est réduite à 2560 px.</small>
+          </div>
+        </div>
+        {{ err("bg_image") }}
+      </div>
+      <label class="field"><span>Assombrir l'image : <output id="dim-out">{{ st.bg_dim }}</output> %</span>
+        <input type="range" name="bg_dim" min="0" max="80" step="5" value="{{ st.bg_dim }}" id="dim">
+        <small>Rend les boutons et le texte plus lisibles sur une image claire.</small>
+        {{ err("bg_dim") }}
+      </label>
+    </div>
+    <p class="hint">Le fond ne concerne que l'accueil : pendant le compte à rebours, les invités se voient toujours à l'écran.</p>
+  </section>
+
+  <section>
+    <h2>Prise de vue</h2>
+    <div class="row">
+      <label class="field"><span>Compte à rebours avant la 1<sup>re</sup> photo (s)</span>
+        <input type="number" name="countdown" min="1" max="15" value="{{ st.countdown }}" inputmode="numeric">
+        {{ err("countdown") }}
+      </label>
+      <label class="field">Délai entre les photos du mode {{ strip_shots }} photos (s)
+        <input type="number" name="strip_countdown" min="1" max="15" value="{{ st.strip_countdown }}" inputmode="numeric">
+        {{ err("strip_countdown") }}
+      </label>
+    </div>
+    <div class="row">
+      <div class="field">Mode du bouton physique / barre d'espace
+        <div class="seg">
+          <label><input type="radio" name="default_mode" value="single" {% if st.default_mode == "single" %}checked{% endif %}><span>1 photo</span></label>
+          <label><input type="radio" name="default_mode" value="strip" {% if st.default_mode == "strip" %}checked{% endif %}><span>{{ strip_shots }} photos</span></label>
+        </div>
+        {{ err("default_mode") }}
+      </div>
+      <label class="field">Retour à l'accueil après le résultat (s)
+        <input type="number" name="result_timeout" min="10" max="600" value="{{ st.result_timeout }}" inputmode="numeric">
+        {{ err("result_timeout") }}
+      </label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Impression</h2>
+    <label class="check big"><input type="checkbox" name="print_enabled" value="1" {% if st.print_enabled %}checked{% endif %}>
+      Afficher le bouton « Imprimer »</label>
+    <div class="row">
+      <label class="field">Tirages max par séance
+        <input type="number" name="max_prints" min="1" max="10" value="{{ st.max_prints }}" inputmode="numeric">
+        {{ err("max_prints") }}
+      </label>
+      <label class="field">Texte du bandeau imprimé
+        <input type="text" name="print_footer" value="{{ st.print_footer }}" maxlength="80" placeholder="(pas de bandeau)">
+        <small><code>{date}</code> est remplacé par la date du jour. Vide = pas de bandeau.</small>
+        {{ err("print_footer") }}
+      </label>
+    </div>
+  </section>
+
+  <footer>
+    <button type="submit">Enregistrer</button>
+    <button type="submit" form="reset" class="secondary danger">Revenir aux valeurs par défaut</button>
+  </footer>
+</form>
+<form method="post" action="/reglages/reset" id="reset"
+  onsubmit="return confirm('Revenir aux valeurs par défaut ? (l\'image de fond est conservée)')"></form>
+
+<script>
+const $ = (s) => document.querySelector(s);
+// N'affiche que les options du type de fond choisi
+function syncBg() {
+  const mode = document.querySelector("input[name=bg_mode]:checked")?.value;
+  for (const el of document.querySelectorAll(".bg-opt")) el.hidden = el.dataset.for !== mode;
+}
+for (const r of document.querySelectorAll("input[name=bg_mode]")) r.addEventListener("change", syncBg);
+syncBg();
+
+for (const b of document.querySelectorAll(".swatch"))
+  b.addEventListener("click", () => ($("input[name=bg_color]").value = b.dataset.color));
+
+$("#dim").addEventListener("input", (e) => ($("#dim-out").textContent = e.target.value));
+
+// Aperçu de l'image choisie avant l'enregistrement
+$("#bg-file").addEventListener("change", (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const t = $("#bg-thumb");
+  t.style.backgroundImage = `url(${URL.createObjectURL(f)})`;
+  t.querySelector("span").hidden = true;
+});
+</script>
+</body>
+</html>

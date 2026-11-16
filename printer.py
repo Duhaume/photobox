@@ -6,6 +6,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 import config
+import settings
 
 FONT_CANDIDATES = [
     "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
@@ -24,10 +25,12 @@ def _font(size):
 def _canvas():
     """Fond blanc 10x15 + bandeau texte. Renvoie (image, hauteur utile)."""
     W, H = config.PRINT_SIZE_PX
-    footer = 110 if config.PRINT_FOOTER else 0
+    footer_text = settings.get("print_footer")
+    footer = 110 if footer_text else 0
     canvas = Image.new("RGB", (W, H), "white")
     if footer:
-        text = config.PRINT_FOOTER.format(date=datetime.now().strftime("%d/%m/%Y"))
+        # replace() plutôt que format() : une accolade isolée dans le texte ne plante pas
+        text = footer_text.replace("{date}", datetime.now().strftime("%d/%m/%Y"))
         ImageDraw.Draw(canvas).text((W // 2, H - MARGIN - footer // 2), text,
                                     fill=(30, 30, 30), font=_font(56), anchor="mm")
     return canvas, H - 2 * MARGIN - footer

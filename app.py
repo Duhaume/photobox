@@ -17,10 +17,12 @@ from flask import (Flask, Response, abort, jsonify, redirect, render_template, r
 from PIL import Image
 
 import config
+import settings
 from camera import Camera
 from printer import grid_layout, print_session
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 25 * 1024 * 1024  # upload de l'image de fond
 config.PHOTO_DIR.mkdir(parents=True, exist_ok=True)
 camera = Camera()
 encoder = ThreadPoolExecutor(max_workers=2)  # encodage JPEG en arrière-plan
@@ -151,17 +153,20 @@ def portal_ok():
 def kiosk():
     if request.remote_addr not in ("127.0.0.1", "::1"):
         return redirect("/galerie")  # un téléphone qui ouvre http://10.42.0.1/
+    st = settings.all_values()
     return render_template(
         "kiosk.html",
         cfg={
-            "countdown": config.COUNTDOWN,
-            "stripCountdown": config.STRIP_COUNTDOWN,
+            "countdown": st["countdown"],
+            "stripCountdown": st["strip_countdown"],
             "stripShots": config.STRIP_SHOTS,
-            "defaultMode": config.DEFAULT_MODE,
-            "resultTimeout": config.RESULT_TIMEOUT,
+            "defaultMode": st["default_mode"],
+            "resultTimeout": st["result_timeout"],
         },
+        st=st,
+        bg_version=settings.background_version(),
         strip_shots=config.STRIP_SHOTS,
-        print_enabled=config.PRINT_ENABLED,
+        print_enabled=st["print_enabled"],
         wifi_qr=qr_svg(wifi_qr_payload()),
         ssid=config.WIFI_SSID,
         password=config.WIFI_PASSWORD,
@@ -183,7 +188,7 @@ def stream():
 @app.post("/api/session")
 @local_only
 def api_session():
-    mode = (request.get_json(silent=True) or {}).get("mode", config.DEFAULT_MODE)
+    mode = (request.get_json(silent=True) or {}).get("mode") or settings.get("default_mode")
     total = config.STRIP_SHOTS if mode == "strip" else 1
     pid = "".join(secrets.choice(string.ascii_lowercase + string.digits) for _ in range(8))
     folder = config.PHOTO_DIR / f"{datetime.now():%Y%m%d-%H%M%S}_{pid}"
@@ -236,10 +241,11 @@ def api_finish(pid):
 @app.post("/api/print/<pid>")
 @local_only
 def api_print(pid):
-    if not config.PRINT_ENABLED:
+    if not settings.get("print_enabled"):
         abort(404)
     folder = find_session(pid)
-    if print_counts.get(pid, 0) >= config.MAX_PRINTS_PER_PHOTO:
+    max_prints = settings.get("max_prints")
+    if print_counts.get(pid, 0) >= max_prints:
         return jsonify(ok=False, error="Nombre maximum d'impressions atteint"), 429
     try:
         job = print_session(folder)
@@ -247,7 +253,7 @@ def api_print(pid):
         app.logger.exception("impression")
         return jsonify(ok=False, error=str(e)), 500
     print_counts[pid] = print_counts.get(pid, 0) + 1
-    return jsonify(ok=True, job=job, remaining=config.MAX_PRINTS_PER_PHOTO - print_counts[pid])
+    return jsonify(ok=True, job=job, remaining=max_prints - print_counts[pid])
 
 
 @app.get("/events")
@@ -267,6 +273,54 @@ def events():
         finally:
             listeners.remove(q)
     return Response(gen(), mimetype="text/event-stream", headers={"Cache-Control": "no-cache"})
+
+
+# ---------------------------------------------------------------- réglages (écran du Pi)
+@app.get("/reglages")
+@local_only
+def settings_page():
+    return render_template("settings.html", st=settings.all_values(),
+                           bg_version=settings.background_version(),
+                           strip_shots=config.STRIP_SHOTS,
+                           saved=request.args.get("ok") == "1", errors={})
+
+
+@app.post("/reglages")
+@local_only
+def settings_save():
+    errors = settings.update(request.form)
+    upload = request.files.get("bg_image")
+    if not errors and upload and upload.filename:
+        try:
+            settings.save_background(upload.stream)
+        except Exception as e:
+            errors["bg_image"] = f"image illisible ({e.__class__.__name__})"
+    if not errors and request.form.get("bg_delete") == "1":
+        settings.delete_background()
+    if errors:
+        # on réaffiche ce qui a été saisi pour ne rien perdre
+        st = settings.all_values() | {k: v for k, v in request.form.items() if k in settings.SCHEMA}
+        st["print_enabled"] = "print_enabled" in request.form
+        return render_template("settings.html", st=st, errors=errors, saved=False,
+                               bg_version=settings.background_version(),
+                               strip_shots=config.STRIP_SHOTS), 400
+    return redirect("/reglages?ok=1", 303)
+
+
+@app.post("/reglages/reset")
+@local_only
+def settings_reset():
+    settings.reset()
+    return redirect("/reglages?ok=1", 303)
+
+
+@app.get("/reglages/fond.jpg")
+@local_only
+def settings_background():
+    p = settings.background_path()
+    if not p.exists():
+        abort(404)
+    return send_from_directory(p.parent, p.name, max_age=31536000)  # URL versionnée ?v=
 
 
 # ---------------------------------------------------------------- invités (téléphones)

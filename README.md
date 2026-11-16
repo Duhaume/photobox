@@ -37,8 +37,21 @@ par défaut (`lpoptions -d NOM`), puis faites un test : `lp -o fit-to-page photo
 - Sur Android, si les données mobiles sont actives, le téléphone peut préférer la 4G une fois
   le portail fermé. Le QR code ② passe en général quand même ; sinon, couper les données mobiles.
 
+## Réglages (sur l'écran du Pi)
+Page **http://localhost/reglages**, accessible :
+- depuis l'accueil de la photobox : **appui long (2 s) dans le coin haut gauche** (un ⚙️ apparaît), ou touche **R** ;
+- depuis le menu des applications / le bureau : raccourci **« Photobox – Réglages »** (créé par `install.sh`,
+  à côté de **« Photobox »** qui rouvre la page photos).
+
+On y règle : titre et **fond de l'écran d'accueil** (aperçu caméra, couleur unie ou image, avec assombrissement),
+comptes à rebours, mode du bouton physique, délai de retour à l'accueil, impression (activée, tirages max,
+texte du bandeau). Le bouton **« Ouvrir la page photos »** ramène à l'accueil, qui prend les nouveaux réglages.
+Les réglages sont enregistrés dans `data/settings.json` et l'image de fond dans `data/background.jpg`
+(hors dépôt git). Comme le reste de l'administration, la page n'est accessible que depuis le Pi lui-même.
+
 ## Configuration
 Voir `config.py` (surchargeable avec les variables d'environnement `PHOTOBOX_*`, dans le service systemd) :
+les valeurs marquées « (réglage) » ne sont que des valeurs par défaut, la page de réglages passe devant.
 SSID et mot de passe Wi-Fi (doivent correspondre au hotspot), comptes à rebours (`COUNTDOWN`,
 `STRIP_COUNTDOWN`), nombre de photos (`STRIP_SHOTS`), mode par défaut, résolution,
 imprimante et options `lp` (ex. `-o media=Postcard` pour une Selphy), texte du bandeau imprimé,

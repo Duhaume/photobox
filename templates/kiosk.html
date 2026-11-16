@@ -9,16 +9,25 @@
 <body>
   <img id="preview" src="/stream.mjpg" alt="">
 
-  <section id="idle" class="layer">
-    <h1>Photobox</h1>
-    <div class="modes">
-      <button class="mode" data-mode="single"><span>📸</span>1 photo</button>
-      <button class="mode" data-mode="strip"><span>🎞️</span>{{ strip_shots }} photos</button>
+  {%- set bg_style = "" -%}
+  {%- if st.bg_mode == "image" and bg_version -%}
+    {%- set dim = st.bg_dim / 100 -%}
+    {%- set bg_style = "background: linear-gradient(rgba(0,0,0,%s), rgba(0,0,0,%s)), url(/reglages/fond.jpg?v=%s) center / cover no-repeat, #000"|format(dim, dim, bg_version) -%}
+  {%- elif st.bg_mode in ("color", "image") -%}
+    {%- set bg_style = "background: " ~ st.bg_color -%}
+  {%- endif %}
+  <section id="idle" class="layer{% if bg_style %} custom-bg{% endif %}"{% if bg_style %} style="{{ bg_style }}"{% endif %}>
+    <div class="top">
+      <h1>{{ st.title }}</h1>
+      <div class="wifi-hint">
+        <div class="qr">{{ wifi_qr|safe }}</div>
+        <div>Toutes les photos sur votre téléphone :<br>Wi-Fi <b>{{ ssid }}</b>
+          {% if password %}<br>mot de passe <b>{{ password }}</b>{% endif %}</div>
+      </div>
     </div>
-    <div class="wifi-hint">
-      <div class="qr">{{ wifi_qr|safe }}</div>
-      <div>Toutes les photos sur votre téléphone :<br>Wi-Fi <b>{{ ssid }}</b>
-        {% if password %}<br>mot de passe <b>{{ password }}</b>{% endif %}</div>
+    <div class="modes">
+      <button class="mode{% if st.default_mode == 'single' %} default{% endif %}" data-mode="single"><span>📸</span>1 photo</button>
+      <button class="mode{% if st.default_mode == 'strip' %} default{% endif %}" data-mode="strip"><span>🎞️</span>{{ strip_shots }} photos</button>
     </div>
   </section>
 
@@ -46,6 +55,9 @@
       <p id="msg"></p>
     </aside>
   </section>
+
+  <!-- Appui long (2 s) dans le coin haut gauche, ou touche R : page de réglages -->
+  <div id="admin-corner" aria-hidden="true"></div>
 
 <script>window.PHOTOBOX = {{ cfg|tojson }};</script>
 <script src="/static/kiosk.js"></script>

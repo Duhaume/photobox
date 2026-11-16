@@ -111,10 +111,27 @@ document.addEventListener("keydown", (e) => {
   else if (e.key === "1") trigger("single");
   else if (e.key === String(CFG.stripShots)) trigger("strip");
   else if (e.code === "KeyP" && state === "result") printPhoto();
+  else if (e.code === "KeyR") openSettings();
 });
 new EventSource("/events").onmessage = (ev) => {
   if (JSON.parse(ev.data).type === "trigger") trigger();
 };
+
+// Réglages : appui long de 2 s dans le coin haut gauche (hors prise de vue), ou touche R.
+function openSettings() {
+  if (state !== "shooting") location.href = "/reglages";
+}
+const corner = $("#admin-corner");
+let pressTimer = null;
+corner.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  if (state === "shooting") return;
+  corner.classList.add("pressing");
+  pressTimer = setTimeout(openSettings, 2000);
+});
+for (const ev of ["pointerup", "pointerleave", "pointercancel"])
+  corner.addEventListener(ev, () => { clearTimeout(pressTimer); corner.classList.remove("pressing"); });
+corner.addEventListener("contextmenu", (e) => e.preventDefault());
 
 // Si le flux MJPEG coupe (redémarrage du service), on le recharge.
 $("#preview").addEventListener("error", () =>
