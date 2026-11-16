@@ -19,6 +19,34 @@ cd ~/photobox
 Ajoutez ensuite l'imprimante sur http://localhost:631 (Administration → Add Printer), définissez-la
 par défaut (`lpoptions -d NOM`), puis faites un test : `lp -o fit-to-page photo.jpg`.
 
+## Adresses d'accès
+Le serveur écoute sur le **port 80** (`PHOTOBOX_PORT` pour changer ; ajouter alors `:PORT` aux adresses).
+
+| Page | Adresse | Depuis |
+|---|---|---|
+| Page photos (accueil, prise de vue) | **http://localhost/** | l'écran du Pi uniquement |
+| Réglages | **http://localhost/reglages** | l'écran du Pi uniquement |
+| Galerie des invités | **http://10.42.0.1/galerie** (ou simplement http://10.42.0.1) | un téléphone connecté au Wi-Fi de la photobox |
+| Page d'une séance | http://10.42.0.1/p/&lt;id&gt; (lien du QR code ②) | idem |
+| Configuration de l'imprimante (CUPS) | http://localhost:631 | l'écran du Pi |
+
+La page photos et les réglages refusent toute autre machine : depuis un téléphone ou un PC,
+http://10.42.0.1/ redirige vers la galerie et http://10.42.0.1/reglages renvoie une erreur 403.
+En développement sur PC (`PHOTOBOX_PORT=8000`) : http://localhost:8000/ et http://localhost:8000/reglages.
+
+## Mise à jour
+Le Wi-Fi du Pi sert de hotspot et n'a donc pas accès à Internet : branchez un **câble Ethernet**
+(ou repassez temporairement le Wi-Fi en client) le temps de la mise à jour, puis sur le Pi :
+```bash
+cd ~/photobox
+git pull
+sudo systemctl restart photobox
+```
+Rechargez ensuite la page photos : appui long dans le coin haut gauche → « Ouvrir la page photos »,
+ou touche F5, ou `sudo reboot`. Relancez `./deploy/install.sh` seulement si une mise à jour l'indique
+(ex. pour créer les raccourcis « Photobox » et « Photobox – Réglages »). Les photos (`photos/`) et
+les réglages (`data/`) ne sont pas touchés par `git pull`.
+
 ## Parcours d'un invité
 1. Il choisit **1 photo** ou **4 photos** sur l'écran (le bouton GPIO ou la barre d'espace lancent
    le mode par défaut, `DEFAULT_MODE`). Mode 4 photos : 3 s avant la première, puis 2 s entre chaque.
@@ -38,7 +66,7 @@ par défaut (`lpoptions -d NOM`), puis faites un test : `lp -o fit-to-page photo
   le portail fermé. Le QR code ② passe en général quand même ; sinon, couper les données mobiles.
 
 ## Réglages (sur l'écran du Pi)
-Page **http://localhost/reglages**, accessible :
+Page **http://localhost/reglages** (sur le Pi), accessible :
 - depuis l'accueil de la photobox : **appui long (2 s) dans le coin haut gauche** (un ⚙️ apparaît), ou touche **R** ;
 - depuis le menu des applications / le bureau : raccourci **« Photobox – Réglages »** (créé par `install.sh`,
   à côté de **« Photobox »** qui rouvre la page photos).
