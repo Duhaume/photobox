@@ -10,12 +10,12 @@
   <main class="wide">
     {% if portal %}
     <div class="banner">
-      <span>Bienvenue sur la <b>Photobox</b> 👋 Touchez une photo pour la télécharger.</span>
+      <span>Bienvenue sur la <b>Photobox</b> Touchez une photo pour la télécharger.</span>
       <button id="done">Terminé</button>
     </div>
     {% endif %}
     <h1>Galerie</h1>
-    <p id="empty" {% if items %}hidden{% endif %}>Pas encore de photos… allez en prendre ! 📸</p>
+    <p id="empty" {% if items %}hidden{% endif %}>Pas encore de photos… allez en prendre !</p>
     <div class="grid" id="grid">
       {% for it in items %}<a href="/p/{{ it.id }}" data-id="{{ it.id }}"><img loading="lazy" src="{{ it.thumb }}" alt="">{% if it.shots|length > 1 %}<span class="badge">{{ it.shots|length }}</span>{% endif %}</a>{% endfor %}
     </div>

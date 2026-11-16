@@ -68,7 +68,7 @@ async function run(mode) {
   $("#photo-qr").innerHTML = current.qr;
   $("#msg").textContent = "";
   const p = $("#btn-print");
-  if (p) { p.disabled = false; p.textContent = "🖨️ Imprimer"; }
+  if (p) { p.disabled = false; p.textContent = "Imprimer"; }
   state = "result";
   show("result");
   armTimeout();

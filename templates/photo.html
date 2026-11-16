@@ -9,7 +9,7 @@
 <body>
   <main>
     {% if gallery %}<p class="back"><a href="/galerie">← Toutes les photos</a></p>{% endif %}
-    <h1>📸 {{ "Vos photos" if s.shots|length > 1 else "Votre photo" }}</h1>
+    <h1>{{ "Vos photos" if s.shots|length > 1 else "Votre photo" }}</h1>
     <img src="{{ s.cover }}" alt="">
     <a class="btn" href="/dl/{{ s.id }}/{{ s.cover_name }}" download>
       Télécharger {{ "la planche" if s.shots|length > 1 else "" }}</a>
